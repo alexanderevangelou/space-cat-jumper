@@ -3,38 +3,16 @@ namespace SpriteKind {
     export const Flower = SpriteKind.create()
     export const Fireball = SpriteKind.create()
 }
-sprites.onOverlap(SpriteKind.Player, SpriteKind.Enemy, function (sprite, otherSprite) {
+sprites.onOverlap(SpriteKind.Player, SpriteKind.Coin, function (sprite, otherSprite) {
+    info.changeScoreBy(1)
     otherSprite.destroy()
-    if (Hops_and_Paw.y < otherSprite.y) {
-        info.changeScoreBy(3)
-    } else {
-        info.changeLifeBy(-1)
-    }
-    if_touched4()
+    if_touched()
 })
-function if_touched4 () {
-    if (if_touched_4 == false) {
-        game.splash("you discoverd a new object!")
-        info.changeScoreBy(1)
-        if_touched_4 = true
-    } else {
-        info.changeScoreBy(0)
+controller.A.onEvent(ControllerButtonEvent.Pressed, function () {
+    if (Hops_and_Paw.vy == 0) {
+        Hops_and_Paw.vy = -150
     }
-}
-sprites.onOverlap(SpriteKind.Player, SpriteKind.Fireball, function (sprite, otherSprite) {
-    info.changeLifeBy(-2)
-    otherSprite.destroy()
-    if_touched5()
 })
-function if_touched2 () {
-    if (if_touched_2 == false) {
-        game.splash("you discoverd a new object!")
-        info.changeScoreBy(1)
-        if_touched_2 = true
-    } else {
-        info.changeScoreBy(0)
-    }
-}
 scene.onOverlapTile(SpriteKind.Player, assets.tile`tile3`, function (sprite, location) {
     game.over(false, effects.melt)
 })
@@ -47,15 +25,28 @@ function if_touched5 () {
         info.changeScoreBy(0)
     }
 }
+function if_touched3 () {
+    if (if_touched_3 == false) {
+        game.splash("you discoverd a new object!")
+        info.changeScoreBy(1)
+        if_touched_3 = true
+    } else {
+        info.changeScoreBy(0)
+    }
+}
+function if_touched4 () {
+    if (if_touched_4 == false) {
+        game.splash("you discoverd a new object!")
+        info.changeScoreBy(1)
+        if_touched_4 = true
+    } else {
+        info.changeScoreBy(0)
+    }
+}
 scene.onOverlapTile(SpriteKind.Player, assets.tile`tile2`, function (sprite, location) {
     current_level += 1
     startLevel()
     if_touched3()
-})
-sprites.onOverlap(SpriteKind.Player, SpriteKind.Coin, function (sprite, otherSprite) {
-    info.changeScoreBy(1)
-    otherSprite.destroy()
-    if_touched()
 })
 sprites.onOverlap(SpriteKind.Player, SpriteKind.Flower, function (sprite, otherSprite) {
     otherSprite.destroy()
@@ -189,6 +180,11 @@ sprites.onOverlap(SpriteKind.Player, SpriteKind.Flower, function (sprite, otherS
     bee.follow(Hops_and_Paw, 50)
     if_touched2()
 })
+sprites.onOverlap(SpriteKind.Player, SpriteKind.Fireball, function (sprite, otherSprite) {
+    info.changeLifeBy(-2)
+    otherSprite.destroy()
+    if_touched5()
+})
 function if_touched () {
     if (firstTouched == false) {
         game.splash("you discoverd a new object!")
@@ -198,16 +194,11 @@ function if_touched () {
         info.changeScoreBy(0)
     }
 }
-controller.A.onEvent(ControllerButtonEvent.Pressed, function () {
-    if (Hops_and_Paw.vy == 0) {
-        Hops_and_Paw.vy = -150
-    }
-})
-function if_touched3 () {
-    if (if_touched_3 == false) {
+function if_touched2 () {
+    if (if_touched_2 == false) {
         game.splash("you discoverd a new object!")
         info.changeScoreBy(1)
-        if_touched_3 = true
+        if_touched_2 = true
     } else {
         info.changeScoreBy(0)
     }
@@ -221,8 +212,10 @@ function startLevel () {
         tiles.setTilemap(tilemap`level_1`)
     } else if (current_level == 3) {
         tiles.setCurrentTilemap(tilemap`level1`)
+    } else if (current_level == 4) {
+        tiles.setCurrentTilemap(tilemap`level5`)
     } else {
-        if (info.score() >= 50) {
+        if (info.score() >= 70) {
             game.setDialogFrame(img`
                 8888.....88....888....888...8888.
                 867788..8768..86768..8678.887768.
@@ -511,67 +504,79 @@ function startLevel () {
         true
         )
         fireball.startEffect(effects.fire)
+        fireball.startEffect(effects.coolRadial)
+        fireball.startEffect(effects.warmRadial)
+        fireball.startEffect(effects.disintegrate)
     }
 }
+sprites.onOverlap(SpriteKind.Player, SpriteKind.Enemy, function (sprite, otherSprite) {
+    otherSprite.destroy()
+    if (Hops_and_Paw.y < otherSprite.y) {
+        info.changeScoreBy(3)
+    } else {
+        info.changeLifeBy(-1)
+    }
+    if_touched4()
+})
 let fireball: Sprite = null
 let flower: Sprite = null
-let if_touched_3 = false
+let if_touched_2 = false
 let firstTouched = false
 let bee: Sprite = null
-let if_touched_5 = false
-let if_touched_2 = false
 let if_touched_4 = false
+let if_touched_3 = false
+let if_touched_5 = false
 let Hops_and_Paw: Sprite = null
 let current_level = 0
 game.setDialogFrame(img`
-    8888.....88....888....88.88....888....888...8888
-    867788..8768..86768..8678768..86768..8678.887768
-    8767768.8777886767688777877788676768877788677678
-    877677686767787767787767676778776778776786776778
-    .8778766677678776778767767767877677876778678778.
-    .8677866867668676768667686766867676866766687768.
-    ..86668688676886868867688867688686886768686668..
-    .888666888888888888888888888888888888888866688..
-    87777688666666666666666666666666666666668886688.
-    867677686666666666666666666666666666666688677778
-    .87766786666666666666666666666666666666686776768
-    ..877668666666666666666666666666666666668766778.
-    ..88888866666666666666666666666666666666866778..
-    .867768866666666666666666666666666666666888888..
-    86777768666666666666666666666666666666668867768.
-    876666886666666666666666666666666666666686777768
-    867777686666666666666666666666666666666688666678
-    .86776886666666666666666666666666666666686777768
-    ..888888666666666666666666666666666666668867768.
-    ..87768866666666666666666666666666666666888888..
-    .877667866666666666666666666666666666666866778..
-    86767768666666666666666666666666666666668766778.
-    877776886666666666666666666666666666666686776768
-    .88668886666666666666666666666666666666688677778
-    87777688666666666666666666666666666666668886688.
-    867677686666666666666666666666666666666688677778
-    .87766786666666666666666666666666666666686776768
-    ..877668666666666666666666666666666666668766778.
-    ..88888866666666666666666666666666666666866778..
-    .867768866666666666666666666666666666666888888..
-    86777768666666666666666666666666666666668867768.
-    876666886666666666666666666666666666666686777768
-    867777686666666666666666666666666666666688666678
-    .86776886666666666666666666666666666666686777768
-    ..888888666666666666666666666666666666668867768.
-    ..87766866666666666666666666666666666666888888..
-    .877667866666666666666666666666666666666866778..
-    86767768666666666666666666666666666666668766778.
-    877776886666666666666666666666666666666686776768
-    .88668886666666666666666666666666666666688677778
-    ..886668888888888888888888888888888888888666888.
-    ..86668686768868688676888676886868867688686668..
-    .8677866676686767686676867668676768667686687768.
-    .8778768776787767787677677678776778767766678778.
-    877677687677877677877676767787767787767686776778
-    8767768877788676768877787778867676887778.8677678
-    867788.8768..86768..8678768..86768..8678..887768
-    8888...888....888....88.88....888....88.....8888
+    999999999999999999999999999999999999999999999999
+    999999999999999999999999999999999999999999999999
+    999911119999119991111999111199999999119999999999
+    999111111191111911111191111119911191111991111999
+    999111111111111111111111111111111111111911111199
+    999111111111111111111111111111111111111111111199
+    999111111111111111111111111111111111111111111199
+    999911111111111111111111111111111111111111111199
+    999991111111111111111111111111111111111111111999
+    999111111111111111111111111111111111111111111999
+    991111111111111111111111111111111111111111119999
+    991111111111111111111111111111111111111111111999
+    999111111111111111111111111111111111111111111199
+    999911111111111111111111111111111111111111111199
+    999111111111111111111111111111111111111111111999
+    999111111111111111111111111111111111111111119999
+    999111111111111111111111111111111111111111111999
+    999911111111111111111111111111111111111111111199
+    999911111111111111111111111111111111111111111199
+    999111111111111111111111111111111111111111111199
+    991111111111111111111111111111111111111111111199
+    991111111111111111111111111111111111111111111999
+    991111111111111111111111111111111111111111119999
+    991111111111111111111111111111111111111111111999
+    999111111111111111111111111111111111111111111199
+    999911111111111111111111111111111111111111111199
+    999111111111111111111111111111111111111111111199
+    991111111111111111111111111111111111111111111199
+    991111111111111111111111111111111111111111111999
+    991111111111111111111111111111111111111111119999
+    991111111111111111111111111111111111111111119999
+    999111111111111111111111111111111111111111111999
+    99d1111111111111111111111111111111111dd111111199
+    9ddd111111111111111111111111111111111dd111111199
+    9ddd1111111111dd111111111111111111111dd1111dd199
+    9d1d111111111ddddd11111111111ddddd111ddd111ddd99
+    9ddd111ddd111d111d1111ddddd11d111d11dddd111ddd99
+    9d1d11ddddd11ddddd1111ddddd11ddddd11d1dd111ddd99
+    9ddd11d1d1d11d111d1dd1d1ddd11d111d11dddddddddd99
+    9d1d11ddddd11ddddd1dd1ddd1d11ddddddddd1ddd111ddd
+    dddd11d1d1d11d111d1dd1ddddd11d111ddddddddddddddd
+    dd1d1ddddddddddddd1dd1d1ddddddddddddd1dddd111ddd
+    dddd1dd1d1dddd111dddddddd1dddd111ddddddddddddddd
+    dd1d1ddddddddddddddddddddddddddddddddd1ddd111ddd
+    ddddddddddddddddddddddd1dddddddddddddddddddddddd
+    ddddddddddddddddddddddddd1ddddddddddd1dddd111ddd
+    .dddddddddddddddddddddddddddddddddddddddddddddd.
+    ..dddddddddddddddddddddddddddddddddddddddddddd..
     `)
 game.showLongText("one day there was a cat on the CatShip. you were an expert explorer but this place was one of the most dangerous place in the world. can you survive and gather information about this place?", DialogLayout.Full)
 game.showLongText("controls are: a = left, d = right, spacebar = jump", DialogLayout.Full)
@@ -829,9 +834,9 @@ game.onUpdate(function () {
     }
 })
 forever(function () {
-	
-})
-forever(function () {
     music.playMelody("A E B G E G - A ", 300)
     music.playMelody("G F G A B A G A ", 300)
+})
+forever(function () {
+	
 })
